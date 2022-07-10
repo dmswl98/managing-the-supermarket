@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fresh supermarket</title>
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.4/dist/web/static/pretendard-dynamic-subset.css"
+    />
+    <link rel="stylesheet" href="./reset.css" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body>
+    <div class="content">
+      <header class="global-header">
+        <h1 class="logo">싱싱 마트</h1>
+        <nav class="market-category">
+          <h2 class="visually-hidden">카테고리</h2>
+          <ul class="market-category-list">
+            <li class="market-category-item">
+              <button
+                class="market-category-name"
+                data-category-name="Vegetables"
+              >
+                🍎 과일·채소
+              </button>
+            </li>
+            <li class="market-category-item">
+              <button class="market-category-name" data-category-name="Meat">
+                🍖 정육·수산
+              </button>
+            </li>
+            <li class="market-category-item">
+              <button class="market-category-name" data-category-name="Milk">
+                🥛 우유·유제품
+              </button>
+            </li>
+            <li class="market-category-item">
+              <button class="market-category-name" data-category-name="Cookie">
+                🍪 과자·빵
+              </button>
+            </li>
+            <li class="market-category-item">
+              <button
+                class="market-category-name"
+                data-category-name="Beverage"
+              >
+                🧃 음료
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <main class="add-product">
+        <div class="chosen-category">
+          <h2 class="chosen-category-name">🍎 과일·채소</h2>
+          <span class="list-count">0</span>
+        </div>
+        <div class="product-form-wrapper">
+          <form class="product-form">
+            <label for="product-name" class="visually-hidden"
+              >🍎 과일·채소</label
+            >
+            <input
+              type="text"
+              id="product-name"
+              class="name-field"
+              placeholder="상품을 추가하세요"
+            />
+            <input
+              type="number"
+              id="product-count"
+              class="count-field"
+              placeholder="상품 개수"
+            />
+            <button type="button" class="input-submit">추가</button>
+          </form>
+          <button type="button" class="sort-button">
+            <span>상품명</span>
+            <div class="icon">
+              <img src="./sort.png" />
+            </div>
+          </button>
+        </div>
+        <ul class="product-list">
+          <!-- <li class="todo-list-item">
+                    <span class="todo-name">test code</span>
+                    <button type="button" class="todo-item-button edit-button">edit</button>
+                    <button type="button" class="todo-item-button delete-button">delete</button>
+                </li>
+                <li class="todo-list-item">
+                    <span class="todo-name">test code</span>
+                    <button type="button" class="todo-item-button edit-button">edit</button>
+                    <button type="button" class="todo-item-button delete-button">delete</button>
+                </li> -->
+        </ul>
+      </main>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
