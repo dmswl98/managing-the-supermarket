@@ -23,7 +23,7 @@ body {
 
 .global-header .logo {
   font-weight: 900;
-  margin: 25px 0 40px 0;
+  margin: 30px 0 40px 0;
   color: #343a40;
 }
 
@@ -126,10 +126,47 @@ body {
   background-color: #1a9e46;
 }
 
+.product-form-wrapper .button-group {
+  display: flex;
+  align-items: center;
+}
+
 .product-form {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.sort-button {
+  display: flex;
+  align-items: center;
+  padding: 4px 6px;
+  margin-top: 10px;
+  border-radius: 2px;
+  transition: background-color 100ms ease-in-out;
+}
+
+.sort-button.sort-name {
+  margin-right: 10px;
+}
+
+.sort-button .icon {
+  position: relative;
+  top: 2px;
+  margin-left: 2px;
+  width: 14px;
+  height: auto;
+  overflow: hidden;
+}
+
+.icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.is-active {
+  background-color: #bec5cc;
 }
 
 .product-list {
@@ -161,13 +198,13 @@ body {
   color: #adb5bd;
 }
 
-.button-group {
+.product-list-item .button-group {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.button-group button {
+.product-list-item .button-group button {
   font-size: 13px;
   font-weight: 300;
   background-color: #f4f5f9;
@@ -175,6 +212,10 @@ body {
   border-radius: 20px;
   margin-right: 6px;
   transition: background-color 200ms ease-in-out;
+}
+
+.product-list-item .button-group button:hover {
+  background-color: #bec5cc;
 }
 
 .count-control-buttons {
@@ -198,36 +239,4 @@ body {
 
 .product-item-button:last-child {
   margin-right: 0;
-}
-
-.button-group button:hover {
-  background-color: #bec5cc;
-}
-
-.sort-button {
-  display: flex;
-  align-items: center;
-  padding: 4px 6px;
-  margin-top: 10px;
-  border-radius: 2px;
-  transition: background-color 100ms ease-in-out;
-}
-
-.sort-button .icon {
-  position: relative;
-  top: 2px;
-  margin-left: 2px;
-  width: 14px;
-  height: auto;
-  overflow: hidden;
-}
-
-.icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.is-active {
-  background-color: #bec5cc;
 }

@@ -18,37 +18,37 @@
   <body>
     <div class="content">
       <header class="global-header">
-        <h1 class="logo">싱싱 마트</h1>
+        <h1 class="logo">🛒 싱싱 마트</h1>
         <nav class="market-category">
           <h2 class="visually-hidden">카테고리</h2>
           <ul class="market-category-list">
             <li class="market-category-item">
               <button
                 class="market-category-name"
-                data-category-name="Vegetables"
+                data-category-name="vegetables"
               >
                 🍎 과일·채소
               </button>
             </li>
             <li class="market-category-item">
-              <button class="market-category-name" data-category-name="Meat">
+              <button class="market-category-name" data-category-name="meat">
                 🍖 정육·수산
               </button>
             </li>
             <li class="market-category-item">
-              <button class="market-category-name" data-category-name="Milk">
+              <button class="market-category-name" data-category-name="milk">
                 🥛 우유·유제품
               </button>
             </li>
             <li class="market-category-item">
-              <button class="market-category-name" data-category-name="Cookie">
+              <button class="market-category-name" data-category-name="cookie">
                 🍪 과자·빵
               </button>
             </li>
             <li class="market-category-item">
               <button
                 class="market-category-name"
-                data-category-name="Beverage"
+                data-category-name="beverage"
               >
                 🧃 음료
               </button>
@@ -80,12 +80,20 @@
             />
             <button type="button" class="input-submit">추가</button>
           </form>
-          <button type="button" class="sort-button">
-            <span>상품명</span>
-            <div class="icon">
-              <img src="./sort.png" />
-            </div>
-          </button>
+          <div class="button-group">
+            <button type="button" class="sort-button sort-name">
+              <span>상품명</span>
+              <div class="icon">
+                <img src="./sort.png" />
+              </div>
+            </button>
+            <button type="button" class="sort-button sort-count">
+              <span>개수</span>
+              <div class="icon">
+                <img src="./sort.png" />
+              </div>
+            </button>
+          </div>
         </div>
         <ul class="product-list">
           <!-- <li class="todo-list-item">
@@ -101,6 +109,6 @@
         </ul>
       </main>
     </div>
-    <script src="./script.js"></script>
+    <script type="module" src="./script.js"></script>
   </body>
 </html>
