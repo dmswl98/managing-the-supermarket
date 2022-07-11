@@ -4,6 +4,15 @@
 
 > **[Udemy 블랙커피 Vanilla JS Lv1. 문벅스 카페 메뉴 앱 만들기](https://github.com/blackcoffee-study/moonbucks-menu)** 를 수강 후 복습을 위해 실습한 내용입니다.
 
+## 🛒 결과물
+
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/76807107/178244601-dc5ae860-82ec-432f-81c9-6935eb8a736a.gif)
+
+- 정렬 버튼을 누른 후, 상품을 추가하거나 제거하면 해당 정렬 기준을 따라 랜더링됩니다.
+- 정렬 버튼을 누르지 않으면 상품을 추가한 순서대로 랜더링됩니다.
+- 추가하거나 수정하는 상품이 이미 존재하는 상품이라면 에러를 일으킵니다.
+- 정렬 버튼을 누르면 다른 카테고리 상품 리스트에도 적용됩니다.
+
 ## 🖊️ [이전 프로젝트](https://github.com/dmswl98/todo-list)에서 개선한 점
 
 - localStorage에 저장된 데이터에 의존했던 프로젝트를 서버로부터 제공되는 데이터에 의존하는 서비스로 개선하였습니다.
