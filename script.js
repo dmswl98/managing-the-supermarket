@@ -1,53 +1,41 @@
+import ProductApi from "./api.js";
+
 const $categoryBtn = document.querySelector(".market-category");
 const $categoryTitle = document.querySelector(".chosen-category-name");
 const $productCount = document.querySelector(".list-count");
-const $productForm = document.querySelector(".product-form");
 const $inputNameField = document.querySelector(".name-field");
 const $inputCountField = document.querySelector(".count-field");
 const $inputBtn = document.querySelector(".input-submit");
 const $productList = document.querySelector(".product-list");
-const $sortBtn = document.querySelector(".sort-button");
-
-$productForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-});
-
-const store = {
-  setLocalStorage(supermarket) {
-    localStorage.setItem("supermarket", JSON.stringify(supermarket));
-  },
-  getLocalStorage() {
-    return JSON.parse(localStorage.getItem("supermarket"));
-  },
-};
+const $sortBtn = document.querySelectorAll(".sort-button");
 
 function App() {
   this.supermarket = {
-    Vegetables: [],
-    Meat: [],
-    Milk: [],
-    Cookie: [],
-    Beverage: [],
+    vegetables: [],
+    meat: [],
+    milk: [],
+    cookie: [],
+    beverage: [],
   };
 
-  this.currentCategory = "Vegetables";
+  this.currentCategory = "vegetables";
 
-  this.init = () => {
-    if (store.getLocalStorage()) {
-      this.supermarket = store.getLocalStorage();
-    }
+  this.init = async () => {
     render();
     initEventListeners();
   };
 
-  const render = (sortList = false) => {
+  const render = async (sortList = false) => {
+    this.supermarket[this.currentCategory] =
+      await ProductApi.getAllProductByCategory(this.currentCategory);
+
     let data = this.supermarket[this.currentCategory];
     if (sortList) data = sortList;
     const template = data
-      .map((item, index) => {
+      .map((item) => {
         return `
-            <li data-product-id="${index}" class="product-list-item">
-              <div class="${item.soldOut ? "sold-out" : ""} product-detail">
+            <li data-product-id="${item.id}" class="product-list-item">
+              <div class="${item.isSoldOut ? "sold-out" : ""} product-detail">
                 <div class="product-name">${item.name}</div>
                 <div class="product-count">${item.count}개</div>
               </div>
@@ -70,12 +58,12 @@ function App() {
   const updateProductCount = () => {
     let productCount = 0;
     this.supermarket[this.currentCategory].map((item) => {
-      if (!item.soldOut) productCount++;
+      if (!item.isSoldOut) productCount++;
     });
     $productCount.innerHTML = `${productCount}`;
   };
 
-  const addProductName = () => {
+  const addProductName = async () => {
     if ($inputNameField.value === "" || $inputCountField.value === "") return;
     const productName = $inputNameField.value;
     const productCount = Number($inputCountField.value);
@@ -89,113 +77,182 @@ function App() {
       return;
     }
 
-    this.supermarket[this.currentCategory].push({
-      name: productName,
-      count: productCount,
-    });
-    store.setLocalStorage(this.supermarket);
+    await ProductApi.addProduct(
+      this.currentCategory,
+      productName,
+      productCount
+    );
 
     $inputNameField.value = "";
     $inputCountField.value = "";
 
-    const productList = [...this.supermarket[this.currentCategory]];
-    if ($sortBtn.classList.contains("is-active")) {
+    let isSort = false;
+    $sortBtn.forEach((btn) => {
+      const flag = btn.classList.contains("sort-name");
+      const type = flag ? "name" : "count";
+      console.log(type);
+      if (btn.classList.contains("is-active")) {
+        isSort = true;
+        sortProduct(type);
+      }
+    });
+
+    if (!isSort) render();
+  };
+
+  const editProductName = async (e) => {
+    const productId = e.target.closest("li").dataset.productId;
+    const $productName = e.target.closest("li").querySelector(".product-name");
+    const productName = $productName.innerText;
+    let updateProductName = prompt("상품명을 수정해주세요.", productName);
+    if (updateProductName === null || updateProductName === "") return;
+
+    let isDuplicate = this.supermarket[this.currentCategory].filter(
+      (v) => v.name === updateProductName
+    ).length;
+    while (isDuplicate) {
+      updateProductName = prompt(
+        "이미 존재하는 상품명입니다. 다른 상품명으로 수정해주세요.",
+        productName
+      );
+      isDuplicate = this.supermarket[this.currentCategory].filter(
+        (v) => v.name === updateProductName
+      ).length;
+    }
+
+    const { count } = this.supermarket[this.currentCategory].filter(
+      (v) => v.id === productId
+    )[0];
+
+    await ProductApi.editProduct(
+      this.currentCategory,
+      updateProductName,
+      count,
+      productId
+    );
+
+    render();
+  };
+
+  const deleteProductName = async (e) => {
+    if (confirm("삭제하시겠습니까?")) {
+      const productId = e.target.closest("li").dataset.productId;
+      await ProductApi.deleteProduct(this.currentCategory, productId);
+
+      render();
+    }
+  };
+
+  const soldOutProduct = async (e) => {
+    const productId = e.target.closest("li").dataset.productId;
+    await ProductApi.soldOutProduct(this.currentCategory, productId);
+    const { name, count } = this.supermarket[this.currentCategory].filter(
+      (v) => v.id === productId
+    )[0];
+    if (count) {
+      await ProductApi.editProduct(this.currentCategory, name, 0, productId);
+    } else {
+      await ProductApi.editProduct(this.currentCategory, name, 1, productId);
+    }
+
+    let isSort = false;
+    $sortBtn.forEach((btn) => {
+      const flag = btn.classList.contains("sort-name");
+      const type = flag ? "name" : "count";
+      console.log(type);
+      if (btn.classList.contains("is-active")) {
+        isSort = true;
+        sortProduct(type);
+      }
+    });
+    if (!isSort) render();
+  };
+
+  const addProduct = async (e) => {
+    const productId = e.target.closest("li").dataset.productId;
+    const { name, count } = this.supermarket[this.currentCategory].filter(
+      (v) => v.id === productId
+    )[0];
+
+    if (count === 0) soldOutProduct(e);
+
+    await ProductApi.editProduct(
+      this.currentCategory,
+      name,
+      count + 1,
+      productId
+    );
+
+    render();
+  };
+
+  const subProduct = async (e) => {
+    const productId = e.target.closest("li").dataset.productId;
+
+    const { name, count } = this.supermarket[this.currentCategory].filter(
+      (v) => v.id === productId
+    )[0];
+
+    if (count === 0) return;
+    if (count === 1) soldOutProduct(e);
+
+    await ProductApi.editProduct(
+      this.currentCategory,
+      name,
+      count - 1,
+      productId
+    );
+
+    render();
+  };
+
+  const sortProduct = async (standard) => {
+    this.supermarket[this.currentCategory] =
+      await ProductApi.getAllProductByCategory(this.currentCategory);
+
+    let productList = [...this.supermarket[this.currentCategory]];
+    if (standard === "name") {
       productList.sort((a, b) => {
         let x = a.name;
         let y = b.name;
         return x.localeCompare(y);
       });
-      render(productList);
-      return;
+    } else {
+      productList.sort((a, b) => a.count - b.count);
     }
-    render();
+    render(productList);
   };
 
-  const editProductName = (e) => {
-    const productId = e.target.closest("li").dataset.productId;
-    const $productName = e.target.closest("li").querySelector(".product-name");
-    const productName = $productName.innerText;
-    const updateProductName = prompt(
-      "Please fill out the corrections.",
-      productName
-    );
-    if (updateProductName === null || updateProductName === "") return;
-    this.supermarket[this.currentCategory][productId].name = updateProductName;
-    store.setLocalStorage(this.supermarket);
-    render();
-  };
-
-  const deleteProductName = (e) => {
-    if (confirm("삭제하시겠습니까?")) {
-      const productId = e.target.closest("li").dataset.productId;
-      this.supermarket[this.currentCategory].splice(productId, 1);
-      store.setLocalStorage(this.supermarket);
+  const changeCategory = (e) => {
+    const isCategoryBtn = e.target.classList.contains("market-category-name");
+    if (isCategoryBtn) {
+      const categoryName = e.target.closest("button").dataset.categoryName;
+      const categoryTitle = e.target.innerText;
+      this.currentCategory = categoryName;
+      $categoryTitle.innerText = categoryTitle;
       render();
     }
-  };
-
-  const soldOutProduct = (e) => {
-    const productId = e.target.closest("li").dataset.productId;
-    this.supermarket[this.currentCategory][productId].soldOut =
-      !this.supermarket[this.currentCategory][productId].soldOut;
-    const productCount =
-      this.supermarket[this.currentCategory][productId].count;
-    if (productCount)
-      this.supermarket[this.currentCategory][productId].count = 0;
-    else this.supermarket[this.currentCategory][productId].count = 1;
-    store.setLocalStorage(this.supermarket);
-    render();
-  };
-
-  const addProduct = (e) => {
-    const productId = e.target.closest("li").dataset.productId;
-    const productCount =
-      this.supermarket[this.currentCategory][productId].count;
-    if (productCount === 0) soldOutProduct(e);
-    this.supermarket[this.currentCategory][productId].count =
-      Number(productCount) + 1;
-    store.setLocalStorage(this.supermarket);
-    render();
-  };
-
-  const subProduct = (e) => {
-    const productId = e.target.closest("li").dataset.productId;
-    const productCount =
-      this.supermarket[this.currentCategory][productId].count;
-    if (productCount === 0) return;
-    if (productCount === 1) soldOutProduct(e);
-    this.supermarket[this.currentCategory][productId].count =
-      Number(productCount) - 1;
-    store.setLocalStorage(this.supermarket);
-    render();
-  };
-
-  const sortProduct = () => {
-    let productList = [...this.supermarket[this.currentCategory]];
-    const soldOutItem = productList.filter((v) => v?.soldOut);
-    productList = productList
-      .filter((v) => !v?.soldOut)
-      .sort((a, b) => {
-        let x = a.name;
-        let y = b.name;
-        return x.localeCompare(y);
-      });
-    render(soldOutItem.concat(productList));
   };
 
   const initEventListeners = () => {
     $inputBtn.addEventListener("click", addProductName);
 
-    $inputNameField.addEventListener("keypress", (e) => {
+    $inputCountField.addEventListener("keypress", (e) => {
+      if ($inputNameField.value.trim() === "") return;
       if (e.key !== "Enter") return;
       addProductName();
+      $inputNameField.focus();
     });
 
-    $sortBtn.addEventListener("click", (e) => {
-      $sortBtn.classList.toggle("is-active");
-      console.log(this.supermarket[this.currentCategory]);
-      if ($sortBtn.classList.contains("is-active")) sortProduct();
-      else render();
+    $sortBtn.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const flag = btn.classList.contains("sort-name");
+        const type = flag ? "name" : "count";
+        console.log(btn);
+        btn.classList.toggle("is-active");
+        if (btn.classList.contains("is-active")) sortProduct(type);
+        else render();
+      });
     });
 
     $productList.addEventListener("click", (e) => {
@@ -225,16 +282,7 @@ function App() {
       }
     });
 
-    $categoryBtn.addEventListener("click", (e) => {
-      const isCategoryBtn = e.target.classList.contains("market-category-name");
-      if (isCategoryBtn) {
-        const categoryName = e.target.closest("button").dataset.categoryName;
-        const categoryTitle = e.target.innerText;
-        this.currentCategory = categoryName;
-        $categoryTitle.innerText = categoryTitle;
-        render();
-      }
-    });
+    $categoryBtn.addEventListener("click", changeCategory);
   };
 }
 
