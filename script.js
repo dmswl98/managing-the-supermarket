@@ -55,6 +55,19 @@ function App() {
     updateProductCount();
   };
 
+  const checkRenderType = () => {
+    let isSort = false;
+    $sortBtn.forEach((btn) => {
+      const flag = btn.classList.contains("sort-name");
+      const type = flag ? "name" : "count";
+      if (btn.classList.contains("is-active")) {
+        isSort = true;
+        sortProduct(type);
+      }
+    });
+    return isSort;
+  };
+
   const updateProductCount = () => {
     let productCount = 0;
     this.supermarket[this.currentCategory].map((item) => {
@@ -86,18 +99,7 @@ function App() {
     $inputNameField.value = "";
     $inputCountField.value = "";
 
-    let isSort = false;
-    $sortBtn.forEach((btn) => {
-      const flag = btn.classList.contains("sort-name");
-      const type = flag ? "name" : "count";
-      console.log(type);
-      if (btn.classList.contains("is-active")) {
-        isSort = true;
-        sortProduct(type);
-      }
-    });
-
-    if (!isSort) render();
+    if (!checkRenderType()) render();
   };
 
   const editProductName = async (e) => {
@@ -131,7 +133,7 @@ function App() {
       productId
     );
 
-    render();
+    if (!checkRenderType()) render();
   };
 
   const deleteProductName = async (e) => {
@@ -139,7 +141,7 @@ function App() {
       const productId = e.target.closest("li").dataset.productId;
       await ProductApi.deleteProduct(this.currentCategory, productId);
 
-      render();
+      if (!checkRenderType()) render();
     }
   };
 
@@ -155,17 +157,7 @@ function App() {
       await ProductApi.editProduct(this.currentCategory, name, 1, productId);
     }
 
-    let isSort = false;
-    $sortBtn.forEach((btn) => {
-      const flag = btn.classList.contains("sort-name");
-      const type = flag ? "name" : "count";
-      console.log(type);
-      if (btn.classList.contains("is-active")) {
-        isSort = true;
-        sortProduct(type);
-      }
-    });
-    if (!isSort) render();
+    if (!checkRenderType()) render();
   };
 
   const addProduct = async (e) => {
@@ -183,7 +175,7 @@ function App() {
       productId
     );
 
-    render();
+    if (!checkRenderType()) render();
   };
 
   const subProduct = async (e) => {
@@ -203,7 +195,7 @@ function App() {
       productId
     );
 
-    render();
+    if (!checkRenderType()) render();
   };
 
   const sortProduct = async (standard) => {
@@ -230,7 +222,7 @@ function App() {
       const categoryTitle = e.target.innerText;
       this.currentCategory = categoryName;
       $categoryTitle.innerText = categoryTitle;
-      render();
+      if (!checkRenderType()) render();
     }
   };
 
@@ -248,7 +240,6 @@ function App() {
       btn.addEventListener("click", () => {
         const flag = btn.classList.contains("sort-name");
         const type = flag ? "name" : "count";
-        console.log(btn);
         btn.classList.toggle("is-active");
         if (btn.classList.contains("is-active")) sortProduct(type);
         else render();
